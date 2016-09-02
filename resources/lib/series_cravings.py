@@ -2,7 +2,11 @@ import parsedom as common
 import urllib2
 import string
 from xbmcswift2 import Plugin
-import urlresolver
+
+try:
+	import urlresolver
+except ImportError:
+	import dummy_urlresolver as urlresolver
 
 plugin = Plugin()
 
