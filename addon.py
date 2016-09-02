@@ -42,9 +42,13 @@ def by_sections():
 	sections = SeriesCravings().show_sections()
 	return [{"label" : section, "path": plugin.url_for("by_section", section=section)} for section in sections]
 
+@plugin.cached()
+def all_shows():
+	return SeriesCravings().shows()
+
 @plugin.route("/by_section/<section>")
 def by_section(section):
-	shows = SeriesCravings().shows()[section]
+	shows = all_shows()[section]
 	return items_for_shows(shows)
 
 @plugin.route("/show/<name>")
