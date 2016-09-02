@@ -2,8 +2,6 @@ from xbmcswift2 import Plugin
 from resources.lib.series_cravings import SeriesCravings
 
 plugin = Plugin()
-
-
 @plugin.route('/')
 def index():
     items = [

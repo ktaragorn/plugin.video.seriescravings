@@ -1,9 +1,10 @@
 import parsedom as common
-from xbmcswift2 import Plugin
 import urllib2
 import string
+from xbmcswift2 import Plugin
 
 plugin = Plugin()
+
 class SeriesCravings:
 	def top_shows(self):
 		section = common.parseDOM(self.tv_shows_page(), "div", attrs={"id" : "secondary"})
@@ -18,9 +19,14 @@ class SeriesCravings:
 		shows_by_sections = [self.generate_shows_hash(common.parseDOM(shows_in_section, "a"), common.parseDOM(shows_in_section, "a", ret="href")) for shows_in_section in shows_by_sections]
 		return dict(zip(section_headers, shows_by_sections))
 
-	# @plugin.cached()
 	def tv_shows_page(self):
-		return urllib2.urlopen("http://series-cravings.me/tv-show-2").read()
+		return series_craving_suffixed_page("tv-show-2")
+
+	def tv_show_page(self, show_path):
+		return series_craving_suffixed_page("show_path")
+
+	def tv_show_episode_path(self, episode_path):
+		return series_craving_suffixed_page("episode_path")
 
 	# parsing for sections seems hard, gonna hard code
 	def show_sections(self):
@@ -32,3 +38,8 @@ class SeriesCravings:
 
 	def extract_path_name(self, url):
 		return url.replace("http://series-cravings.me/", "")
+
+
+@plugin.cached()
+def series_craving_suffixed_page(suffix):
+	return str(urllib2.urlopen("http://series-cravings.me/" + suffix).read())
