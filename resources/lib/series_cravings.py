@@ -26,7 +26,7 @@ class SeriesCravings:
 		return series_craving_suffixed_page(show_path)
 
 	def tv_show_episode_path(self, episode_path):
-		return series_craving_suffixed_page(episode_path)
+		return series_craving_suffixed_page("test/" + episode_path)
 
 	# parsing for sections seems hard, gonna hard code
 	def show_sections(self):
@@ -50,6 +50,15 @@ class SeriesCravings:
 		seasons_episodes = common.parseDOM(self.tv_show_page(path), "ul", attrs={"class": "b"})
 		seasons_episodes = [self.generate_hash(common.parseDOM(episodes_in_season, "a"), common.parseDOM(episodes_in_season, "a", ret="href"), path_extractor=self.extract_episode_path) for episodes_in_season in seasons_episodes]
 		return dict(zip(seasons, seasons_episodes))
+
+	def episode_streams(self, path):		# names=/
+		page = self.tv_show_episode_path(path)
+		names = common.parseDOM(page, "b") # seems hacky but works perfectly
+		# urls = common.parseDOM(page, "iframe", ret="src")
+
+		#hacky but works better
+		urls = [common.parseDOM(iframe.lower() + "</iframe>", "iframe", ret="src")[0] for iframe in common.parseDOM(page, "b",attrs={"id": "ko"}, ret="data-iframe")]
+		return dict(zip(names, urls))
 
 
 @plugin.cached()
