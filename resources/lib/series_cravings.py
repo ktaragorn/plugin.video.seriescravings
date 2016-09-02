@@ -68,7 +68,7 @@ class SeriesCravings:
 		#hacky but works better
 		urls = [common.parseDOM(iframe.lower() + "</iframe>", "iframe", ret="src")[0] for iframe in common.parseDOM(page, "b",attrs={"id": "ko"}, ret="data-iframe")]
 		urls = [urlresolver.resolve(url) for url in urls]
-		return filter(lamda (source, url): url, dict(zip(names, urls)).iteritems())
+		return dict(filter(lambda (source, url): url, zip(names, urls)))
 
 
 @plugin.cached()
