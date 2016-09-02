@@ -1,7 +1,11 @@
-import parsedom as common
 import urllib2
 import string
 from xbmcswift2 import Plugin
+
+try:
+	import parsedom as common
+except ImportError:
+	import CommonFunctions as common
 
 try:
 	import urlresolver
@@ -56,7 +60,7 @@ class SeriesCravings:
 		seasons_episodes = [self.generate_hash(common.parseDOM(episodes_in_season, "a"), common.parseDOM(episodes_in_season, "a", ret="href"), path_extractor=self.extract_episode_path) for episodes_in_season in seasons_episodes]
 		return dict(zip(seasons, seasons_episodes))
 
-	def episode_streams(self, path):		# names=/
+	def episode_streams(self, path):
 		page = self.tv_show_episode_path(path)
 		names = common.parseDOM(page, "b") # seems hacky but works perfectly
 		# urls = common.parseDOM(page, "iframe", ret="src")
@@ -64,7 +68,7 @@ class SeriesCravings:
 		#hacky but works better
 		urls = [common.parseDOM(iframe.lower() + "</iframe>", "iframe", ret="src")[0] for iframe in common.parseDOM(page, "b",attrs={"id": "ko"}, ret="data-iframe")]
 		urls = [urlresolver.resolve(url) for url in urls]
-		return dict(zip(names, urls))
+		return filter(lamda (source, url): url, dict(zip(names, urls)).iteritems())
 
 
 @plugin.cached()

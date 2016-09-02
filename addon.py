@@ -29,8 +29,8 @@ def index():
     return items
 
 
-def generate_items(elements, route):
-	return [{"label" : element["name"], "path": plugin.url_for(route, path=element["path"])} for element in elements]
+def generate_items(elements, route, is_playable=False):
+	return [{"label" : element["name"], "path": plugin.url_for(route, path=element["path"]), "is_playable" : is_playable} for element in elements]
 
 @plugin.route("/top_shows")
 def top_shows():
@@ -60,7 +60,7 @@ def show(path):
 @plugin.route("/show/<show_path>/season/<season>")
 def show_episodes(show_path, season):
 	episodes = SeriesCravings().show_episodes(show_path)[season]
-	return generate_items(episodes, route="episode")
+	return generate_items(episodes, route="episode", is_playable=True)
 
 @plugin.route("/episode/<path>")
 def episode(path):
