@@ -23,21 +23,33 @@ class SeriesCravings:
 		return series_craving_suffixed_page("tv-show-2")
 
 	def tv_show_page(self, show_path):
-		return series_craving_suffixed_page("show_path")
+		return series_craving_suffixed_page(show_path)
 
 	def tv_show_episode_path(self, episode_path):
-		return series_craving_suffixed_page("episode_path")
+		return series_craving_suffixed_page(episode_path)
 
 	# parsing for sections seems hard, gonna hard code
 	def show_sections(self):
 		return ["0-9"] + list(string.uppercase)
 
-	def generate_shows_hash(self,names, urls):
-		path_names = [self.extract_path_name(url) for url in urls]
-		return [{"name": name, "path_name": path_name} for (name, path_name) in zip(names, path_names)]
+	def generate_shows_hash(self, names, urls):
+		return self.generate_hash(names, urls, path_extractor=self.extract_show_path)
 
-	def extract_path_name(self, url):
+	def generate_hash(self,names, urls, path_extractor):
+		paths = [path_extractor(url) for url in urls]
+		return [{"name": name, "path": path} for (name, path) in zip(names, paths)]
+
+	def extract_show_path(self, url):
 		return url.replace("http://series-cravings.me/", "")
+
+	def extract_episode_path(self, url):
+		return url.replace("http://series-cravings.me/test/", "")
+
+	def show_episodes(self, path):
+		seasons = common.parseDOM(self.tv_show_page(path),"div", attrs={"class" : "omsc-toggle-title"})
+		seasons_episodes = common.parseDOM(self.tv_show_page(path), "ul", attrs={"class": "b"})
+		seasons_episodes = [self.generate_hash(common.parseDOM(episodes_in_season, "a"), common.parseDOM(episodes_in_season, "a", ret="href"), path_extractor=self.extract_episode_path) for episodes_in_season in seasons_episodes]
+		return dict(zip(seasons, seasons_episodes))
 
 
 @plugin.cached()

@@ -29,13 +29,13 @@ def index():
     return items
 
 
-def items_for_shows(shows):
-	return [{"label" : show["name"], "path": plugin.url_for("show", name=show["path_name"])} for show in shows]
+def generate_items(elements, path):
+	return [{"label" : element["name"], "path": plugin.url_for(path, path=element["path"])} for element in elements]
 
 @plugin.route("/top_shows")
 def top_shows():
 	shows = SeriesCravings().top_shows()
-	return items_for_shows(shows)
+	return generate_items(shows, path="show")
 
 @plugin.route("/by_sections")
 def by_sections():
@@ -49,11 +49,22 @@ def all_shows():
 @plugin.route("/by_section/<section>")
 def by_section(section):
 	shows = all_shows()[section]
-	return items_for_shows(shows)
+	return generate_items(shows, path="show")
 
-@plugin.route("/show/<name>")
-def show(name):
-	return [{"label": name}]
+@plugin.route("/show/<path>")
+def show(path):
+	seasons = SeriesCravings().show_episodes(path).keys()
+	seasons.reverse()
+	return [{"label" : season, "path": plugin.url_for("show_episodes", season=season, show_path=path)} for season in seasons]
+
+@plugin.route("/show/<show_path>/season/<season>")
+def show_episodes(show_path, season):
+	episodes = SeriesCravings().show_episodes(show_path)[season]
+	return generate_items(episodes, path="episode")
+
+@plugin.route("/episode/<path>")
+def episode(path):
+	pass
 
 if __name__ == '__main__':
     plugin.run()
