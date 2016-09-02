@@ -65,7 +65,7 @@ def show_episodes(show_path, season):
 @plugin.route("/episode/<path>")
 def episode(path):
 	streams = SeriesCravings().episode_streams(path)
-	return [{"label" : source, "path": streams[source]} for source in streams]
+	return [{"label" : source, "path": streams[source], "is_playable" : True} for source in streams]
 
 if __name__ == '__main__':
     plugin.run()
