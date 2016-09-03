@@ -34,8 +34,9 @@ def generate_items(elements, route, is_playable=False):
 
 @plugin.route("/top_shows")
 def top_shows():
-	shows = SeriesCravings().top_shows()
-	return generate_items(shows, route="show")
+    shows = SeriesCravings().top_shows()
+    plugin.set_content("tvshows")
+    return generate_items(shows, route="show")
 
 @plugin.route("/by_sections")
 def by_sections():
@@ -48,8 +49,9 @@ def all_shows():
 
 @plugin.route("/by_section/<section>")
 def by_section(section):
-	shows = all_shows()[section]
-	return generate_items(shows, route="show")
+    shows = all_shows()[section]
+    plugin.set_content("tvshows")
+    return generate_items(shows, route="show")
 
 @plugin.route("/show/<path>")
 def show(path):
@@ -59,8 +61,9 @@ def show(path):
 
 @plugin.route("/show/<show_path>/season/<season>")
 def show_episodes(show_path, season):
-	episodes = SeriesCravings().show_episodes(show_path)[season]
-	return generate_items(episodes, route="episode", is_playable=False)
+    plugin.set_content("episodes")
+    episodes = SeriesCravings().show_episodes(show_path)[season]
+    return generate_items(episodes, route="episode", is_playable=False)
 
 @plugin.route("/episode/<path>")
 def episode(path):
