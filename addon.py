@@ -60,7 +60,7 @@ def show(path):
 @plugin.route("/show/<show_path>/season/<season>")
 def show_episodes(show_path, season):
 	episodes = SeriesCravings().show_episodes(show_path)[season]
-	return generate_items(episodes, route="episode", is_playable=True)
+	return generate_items(episodes, route="episode", is_playable=False)
 
 @plugin.route("/episode/<path>")
 def episode(path):
