@@ -1,6 +1,11 @@
 from xbmcswift2 import Plugin
 from resources.lib.series_cravings import SeriesCravings
 
+try:
+    import urlresolver
+except ImportError:
+    import dummy_urlresolver as urlresolver
+
 plugin = Plugin()
 @plugin.route('/')
 def index():
@@ -63,12 +68,14 @@ def show(path):
 def show_episodes(show_path, season):
     plugin.set_content("episodes")
     episodes = SeriesCravings().show_episodes(show_path)[season]
-    return generate_items(episodes, route="episode", is_playable=False)
+    return generate_items(episodes, route="episode", is_playable=True)
 
 @plugin.route("/episode/<path>")
 def episode(path):
-	streams = SeriesCravings().episode_streams(path)
-	return [{"label" : source, "path": streams[source], "is_playable" : True} for source in streams]
+    streams = SeriesCravings().episode_streams(path)
+    stream = urlresolver.choose_source([urlresolver.HostedMediaFile(url=value, title=key) for (key, value) in streams.iteritems()])
+    plugin.log.error(stream)
+    plugin.set_resolved_url(stream.get_url())
 
 if __name__ == '__main__':
     plugin.run()
