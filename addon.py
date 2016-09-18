@@ -1,5 +1,6 @@
 from xbmcswift2 import Plugin
 from resources.lib.series_cravings import SeriesCravings
+import xbmcgui
 
 try:
     import urlresolver
@@ -73,9 +74,12 @@ def show_episodes(show_path, season):
 @plugin.route("/episode/<path>")
 def episode(path):
     streams = SeriesCravings().episode_streams(path)
-    stream = urlresolver.choose_source([urlresolver.HostedMediaFile(url=value, title=key) for (key, value) in streams.iteritems()])
-    plugin.log.error(stream)
-    plugin.set_resolved_url(stream.get_url())
+    if streams:
+        stream = urlresolver.choose_source([urlresolver.HostedMediaFile(url=value, title=key) for (key, value) in streams.iteritems()])
+        plugin.log.error(stream)
+        plugin.set_resolved_url(stream.get_url())
+    else:
+        xbmcgui.Dialog().notification("No Streams", "No usable streams found", xbmcgui.NOTIFICATION_ERROR, 5000)
 
 if __name__ == '__main__':
     plugin.run()
